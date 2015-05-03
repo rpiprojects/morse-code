@@ -2,7 +2,7 @@ import RPi.GPIO as GPIO
 import time
 
 pinNum = 2
-UNIT_AMOUNT = .2
+UNIT_AMOUNT = .1
 DOT_TIME = UNIT_AMOUNT
 DASH_TIME = UNIT_AMOUNT * 3
 LETTER_WAIT_TIME = UNIT_AMOUNT
@@ -79,10 +79,8 @@ def parse_char(code):
 	for index, char in enumerate(code):
 		if char == '.':
 			dot()
-			print('dot')
 		else:
 			dash()
-			print('dash')
 		if index < (len(code) - 1):
 			reset_led(LETTER_WAIT_TIME)
 
@@ -96,13 +94,14 @@ def parse_word(word):
 
 def parse_line(line):
 	word_array = line.split(' ')
-	print(word_array)
 	for word in word_array:
 		parse_word(word)
 		reset_led(BETWEEN_WORD_WAIT_TIME)
 
 while True:
 	line = input('message: ')
+	if line == 'q()':
+		break;
 	parse_line(line)
 
 GPIO.cleanup()
