@@ -1,6 +1,5 @@
 import RPi.GPIO as GPIO
 import time
-import json
 
 pinNum = 2
 UNIT_AMOUNT = .1
@@ -66,7 +65,7 @@ GPIO.setup(pinNum,GPIO.OUT) #replace pinNum with whatever pin you used, this set
 
 def reset_led(wait_time):
 	GPIO.output(pinNum, GPIO.LOW)
-	print('sleep:' + str(wait_time))
+	# print('sleep:' + str(wait_time))
 	time.sleep(wait_time)
 
 def dot():
@@ -77,31 +76,40 @@ def dash():
 	GPIO.output(pinNum, GPIO.HIGH)
 	time.sleep(DASH_TIME)
 
-def parse_code(code, eow):
-	if code == 'x':
-		return
+def parse_char(code):
+	print(code)
 	for index, char in enumerate(code):
-		print(char)
 		if char == '.':
 			dot()
+			print('dot')
 		else:
 			dash()
+			print('dash')
 		if index < (len(code) - 1):
 			reset_led(LETTER_WAIT_TIME)
-	if not eow:
-		reset_led(WORD_WAIT_TIME)
+
+def parse_word(word):
+	for index, char in enumerate(word.upper()):
+		parse_char(CODE.get(char, 'x'))
+		if index < (len(word) - 1):
+			reset_led(WORD_WAIT_TIME)
 
 # handles sleeping between words
 def parse_line(line):
-	for index, c in enumerate(line.upper()):
-		if c == ' ':
-			time.sleep(BETWEEN_WORD_WAIT_TIME)
-		else:
-			if index == (len(line) - 1) or line[index + 1] == ' ':
-				parse_code(CODE.get(c, 'x'), True)
-			else:
-				parse_code(CODE.get(c, 'x'), False)
-	reset_led(0.1) # turns off the led while waiting for new input
+	word_array = line.split(' ')
+	print(word_array)
+	for word in word_array:
+		parse_word(word)
+		reset_led(BETWEEN_WORD_WAIT_TIME)
+	# for index, c in enumerate(line.upper()):
+	# 	if c == ' ':
+	# 		time.sleep(BETWEEN_WORD_WAIT_TIME)
+	# 	else:
+	# 		if index == (len(line) - 1) or line[index + 1] == ' ':
+	# 			parse_code(CODE.get(c, 'x'), True)
+	# 		else:
+	# 			parse_code(CODE.get(c, 'x'), False)
+	# reset_led(0.1) # turns off the led while waiting for new input
 
 
 while True:
