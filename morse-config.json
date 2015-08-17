@@ -1,5 +1,6 @@
 {
   "pin-number": 2,
+  "receive-pin-number": 21,
   "unit-amount": 0.1,
   "codes": {
     " ": " ",
